@@ -1,6 +1,10 @@
 ## lol-cat
 This is a fork of [osu!cat](https://github.com/ZeCryptic/osu-cat/releases/tag/v1.2.0) for use with League of Legends. Keys pressed with the middle and ring finger of the left hand trigger a left press, and every other key triggers a right press. Mouse is tracked as normal. Command line options are removed for convenience. Green screen mode is used by default. To turn it off, make a file called "nogreenscreen.txt" with the contents "1" for a white background. I had to change the way the original detected keys to allow detection inside of the game window, so it detects keys a little bit differently, but I think its more efficient overall. Feel free to use it on your stream. You can put a link to this repo in your stream description if you want.
 
+Random video of it in action:
+![gif of it in action](https://i.giphy.com/media/2YpMVmEdThVGc4cII4/giphy.webp)
+Better video examples welcome
+
 ## Download
 I've compiled my version into a windows binary so you don't have to compile it yourself:
 ### [Download Windows Binaries here](https://github.com/Taiiwo/lol-cat/releases)
