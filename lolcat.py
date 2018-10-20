@@ -1,7 +1,7 @@
 from tkinter import Tk, Label
 import PIL.ImageTk
 import PIL.Image
-from pyHook import HookManager
+import pyHook
 from win32gui import GetCursorPos
 from math import sqrt
 from time import sleep
@@ -107,35 +107,26 @@ print('Disclaimer: There is a high probability you will experience some bugs or 
       'This program will also most likely not work on resolutions where the height is bigger than the width and there\n'
       'is no support for custom ingame resolutions or sensitivities. You have been warned.')
 print('----------------------------------------------------------------------------------------------------------------------')
-print('Before you can use this program you need to configure some things')
-while True:
-    lk = "qwaszx12"
 
-print('(Type 0 for tablet and 1 for mouse)')
-while True:
-    i_type = input('Tablet or mouse: ')
-    if i_type == '0':
-        cursor_device = 'tablet'
-        break
-    elif i_type == '1':
-        cursor_device = 'mouse'
-        break
-    else:
-        print('Invalid input')
+i_type = "1"
+if i_type == '0':
+    cursor_device = 'tablet'
+elif i_type == '1':
+    cursor_device = 'mouse'
+else:
+    exit('Invalid cursor type')
 
-print('(Type 0 for no and 1 for yes)')
-while True:
-    i_type = input('Use chroma key green background?: ')
-    if i_type == '0':
-        background = 'standard'
-        start = True
-        break
-    elif i_type == '1':
-        background = 'green'
-        start = True
-        break
-    else:
-        print('Invalid input')
+i_type = "0"
+try:
+    i_type = open("nogreenscreen.txt").read().strip()
+except:
+    pass
+if i_type == '1':
+    background = 'standard'
+    start = True
+else:
+    background = 'green'
+    start = True
 
 print('All done! To reconfigure, just close and relaunch the application')
 print('Note: When re-sizing, hit any key to reload the image!')
@@ -165,24 +156,38 @@ k2_p_prev = False
 first_iteration = True
 force_update = True
 last_hit = 1
-left_keys = list("qwaszx12`").extend(["tab", "ctrl", "shift", "caps lock"])
+left_keys = "`12QWASZX"
+hm = True
+pressed_keys = []
+def key_down(event):
+    if event.KeyID in pressed_keys or event.KeyID == 0:
+        return 1
+    pressed_keys.append(event.KeyID)
+    return 1
+def key_up(event):
+    global pressed_keys
+    if event.KeyID not in pressed_keys:
+        return 1
+    pressed_keys = []
+    return 1
 def iterate():
-    global f, f_prev, k1_p_prev, k2_p_prev, last_hit, drag, w_size_prev, w_size, first_iteration, force_update
+    global f, f_prev, k1_p_prev, k2_p_prev, last_hit, drag, w_size_prev, w_size, first_iteration, force_update, hm
     if drag:
         root.after(5, iterate)
         return
 
     k1_p = False
     k2_p = False
-    keyboard._listener.start_if_necessary()
-    with keyboard._pressed_events_lock:
-        for e in keyboard._pressed_events.values():
-            if e.name in left_keys:
-                k1_p = True
-            else:
-                k2_p = True
-    del keyboard._listener
-    keyboard._listener = keyboard._KeyboardListener()
+    del hm
+    hm = pyHook.HookManager()
+    hm.KeyDown = key_down
+    hm.KeyUp = key_up
+    hm.HookKeyboard()
+    for key in pressed_keys:
+        if chr(key) in left_keys:
+            k1_p = True
+        else:
+            k2_p = True
     x, y = GetCursorPos()
     f = find_frame(x, y, f)
 
